@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "hw-13-env"
+version = "0.1.0"
+description = ""
+authors = ["chabanchuk <145770156+chabanchuk@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.110.1"
+alembic = "^1.13.1"
+sqlalchemy = "^2.0.29"
+asyncpg = "^0.29.0"
+uvicorn = "^0.29.0"
+pydantic = ">=2.0,<3.0"
+email-validator = ">=2.0,<3.0"
+python-jose = "^3.3.0"
+passlib = "^1.7.4"
+python-multipart = "^0.0.9"
+python-dotenv = "^1.0.1"
+libgravatar = "^1.0.4"
+fastapi-mail = ">=1.4.1,<1.5.0"
+bcrypt = "^4.1.3"
+pillow = "^10.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
