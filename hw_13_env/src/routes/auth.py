@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.db import get_db
 from src.repository import users as repositories_users
+from src.conf import messages
 from src.schemas.user import UserSchema, TokenSchema, UserResponse, RequestEmail
 from src.services.auth import auth_service
 from src.services.email import send_email
@@ -33,7 +34,7 @@ async def signup(body: UserSchema, bt: BackgroundTasks, request: Request, db: As
     try:
         exist_user = await repositories_users.get_user_by_email(body.email, db)
         if exist_user:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Account already exists")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=messages.ACCOUNT_EXIST)
 
         body.password = auth_service.get_password_hash(body.password)
         new_user = await repositories_users.create_user(body, db)
@@ -61,13 +62,13 @@ async def login(body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = 
     try:
         user = await repositories_users.get_user_by_email(body.username, db)
         if user is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_EMAIL)
         if not user.confirmed:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email not confirmed")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.EMAIL_NOT_CONFIRMED)
         if not auth_service.verify_password(body.password, user.password):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=messages.INVALID_PASSWORD)
 
-        access_token = await auth_service.create_access_token(data={"sub": user.email, "test": "Сергій Багмет"})
+        access_token = await auth_service.create_access_token(data={"sub": user.email, "test": "Test User"})
         refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
         await repositories_users.update_token(user, refresh_token, db)
         return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
@@ -128,9 +129,9 @@ async def confirmed_email(token: str, db: AsyncSession = Depends(get_db)):
         if user is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Verification error")
         if user.confirmed:
-            return {"message": "Your email is already confirmed"}
+            return {"message": messages.EMAIL_CONFIRMED}
         await repositories_users.confirmed_email(email, db)
-        return {"message": "Email confirmed"}
+        return {"message": messages.EMAIL_CONFIRMED}
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 

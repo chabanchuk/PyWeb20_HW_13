@@ -3,7 +3,7 @@ from fastapi import HTTPException, status
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from fastapi_mail.errors import ConnectionErrors
 from pydantic import EmailStr
-from src.conf import config
+from src.conf.config import config
 
 conf = ConnectionConfig(
     MAIL_USERNAME=config.MAIL_USERNAME,
@@ -16,22 +16,18 @@ conf = ConnectionConfig(
     MAIL_SSL_TLS=config.MAIL_SSL_TLS,
     USE_CREDENTIALS=config.USE_CREDENTIALS,
     VALIDATE_CERTS=config.VALIDATE_CERTS,
-    TEMPLATE_FOLDER=config.TEMPLATE_FOLDER,
 )
 
 
 async def send_email(email: EmailStr, username: str, host: str):
     """
-    Відправлення електронного листа для підтвердження адреси електронної пошти.
-
-    Args:
-        email (EmailStr): Адреса електронної пошти отримувача.
-        username (str): Ім'я користувача для включення в текст повідомлення.
-        host (str): Адреса веб-сайту, де розміщений сервіс для підтвердження.
-
-    Raises:
-        ConnectionErrors: Помилка під час підключення до SMTP-сервера.
-
+    The send_email function sends an email to the user with a link to confirm their email address.
+    
+    :param email: EmailStr: Specify the email address of the recipient
+    :param username: str: Include the username in the email message
+    :param host: str: Pass the hostname of the website where your service is located
+    :return: None
+    :doc-author: Trelent
     """
     try:
         # Створення токену для підтвердження електронної пошти

@@ -11,13 +11,12 @@ from src.schemas.user import UserSchema
 
 async def get_user_by_email(email: str, db: AsyncSession = Depends(get_db)):
     """
-    Отримати користувача за електронною адресою з бази даних.
-
-    Args:
-        email (str): Електронна адреса користувача.
-
-    Returns:
-        User | None: Знайдений користувач або None, якщо не знайдено.
+    The get_user_by_email function is used to retrieve a user from the database by their email address.
+    
+    :param email: str: Specify the email of the user to be searched for
+    :param db: AsyncSession: Pass the database session to the function
+    :return: A user object or none if not found
+    :doc-author: Trelent
     """
     stmt = select(User).filter_by(email=email)
     user = await db.execute(stmt)
@@ -26,14 +25,12 @@ async def get_user_by_email(email: str, db: AsyncSession = Depends(get_db)):
 
 async def create_user(body: UserSchema, db: AsyncSession = Depends(get_db)):
     """
-    Створити нового користувача в базі даних.
-
-    Args:
-        body (UserSchema): Дані нового користувача.
-        db (AsyncSession, optional): Об'єкт сесії бази даних. Defaults to Depends(get_db).
-
-    Returns:
-        User: Новостворений користувач.
+    The create_user function creates a new user in the database.
+    
+    :param body: UserSchema: Specify the schema of the request body
+    :param db: AsyncSession: Pass the database session to the function
+    :return: An object of type user
+    :doc-author: Trelent
     """
     avatar = None
     try:
@@ -58,12 +55,13 @@ async def create_user(body: UserSchema, db: AsyncSession = Depends(get_db)):
 
 async def update_token(user: User, token: str | None, db: AsyncSession):
     """
-    Оновити токен доступу користувача в базі даних.
-
-    Args:
-        user (User): Об'єкт користувача.
-        token (str | None): Новий токен доступу або None.
-        db (AsyncSession): Об'єкт сесії бази даних.
+    The update_token function updates the user's access token in the database.
+    
+    :param user: User: Pass the user object to the function
+    :param token: str | None: Pass the new token to the function
+    :param db: AsyncSession: Update the database
+    :return: Nothing
+    :doc-author: Trelent
     """
     user.refresh_token = token
     await db.commit()
@@ -71,14 +69,12 @@ async def update_token(user: User, token: str | None, db: AsyncSession):
 
 async def confirm_email(email: str, db: AsyncSession):
     """
-    Підтвердити електронну адресу користувача в базі даних.
-
-    Args:
-        email (str): Електронна адреса користувача.
-        db (AsyncSession): Об'єкт сесії бази даних.
-
-    Raises:
-        HTTPException: Якщо користувач не знайдений.
+    The confirm_email function confirms the user's email address in the database.
+    
+    :param email: str: Pass the email of the user to be confirmed
+    :param db: AsyncSession: Pass the database session object to the function
+    :return: Nothing
+    :doc-author: Trelent
     """
     user = await get_user_by_email(email, db)
     if user:

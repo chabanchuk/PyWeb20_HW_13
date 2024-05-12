@@ -8,20 +8,14 @@ from src.schemas.todo import TodoSchema, TodoUpdateSchema
 
 async def get_todos(limit: int, offset: int, db: AsyncSession, user: User):
     """
-    Отримати список завдань (todos) для конкретного користувача з бази даних.
-
-    Args:
-        limit (int): Максимальна кількість елементів для отримання.
-        offset (int): Зміщення від початку списку.
-        db (AsyncSession): Об'єкт сесії бази даних.
-        user (User): Об'єкт користувача, для якого шукаються завдання.
-
-    Returns:
-        list[Todo]: Список завдань (todos) користувача.
-
-    Raises:
-        NoResultFound: Якщо не знайдено жодного результату.
-        SQLAlchemyError: Помилка бази даних.
+    The get_todos function returns a list of todos for the specified user.
+    
+    :param limit: int: Limit the number of results returned
+    :param offset: int: Specify the offset from the beginning of the list
+    :param db: AsyncSession: Pass the database session to the function
+    :param user: User: Filter the todos by user
+    :return: A list of todo objects
+    :doc-author: Trelent
     """
     try:
         stmt = select(Todo).filter_by(user=user).offset(offset).limit(limit)
@@ -35,19 +29,13 @@ async def get_todos(limit: int, offset: int, db: AsyncSession, user: User):
 
 async def get_all_todos(limit: int, offset: int, db: AsyncSession):
     """
-    Отримати список всіх завдань (todos) з бази даних.
-
-    Args:
-        limit (int): Максимальна кількість елементів для отримання.
-        offset (int): Зміщення від початку списку.
-        db (AsyncSession): Об'єкт сесії бази даних.
-
-    Returns:
-        list[Todo]: Список всіх завдань (todos).
-
-    Raises:
-        NoResultFound: Якщо не знайдено жодного результату.
-        SQLAlchemyError: Помилка бази даних.
+    The get_all_todos function returns a list of all todos in the database.
+    
+    :param limit: int: Limit the number of results returned from the database
+    :param offset: int: Specify the number of records to skip before returning results
+    :param db: AsyncSession: Pass the database session object to the function
+    :return: A list of todo objects
+    :doc-author: Trelent
     """
     try:
         stmt = select(Todo).offset(offset).limit(limit)
@@ -61,19 +49,13 @@ async def get_all_todos(limit: int, offset: int, db: AsyncSession):
 
 async def get_todo(todo_id: int, db: AsyncSession, user: User):
     """
-    Отримати конкретне завдання (todo) з бази даних за його ідентифікатором.
-
-    Args:
-        todo_id (int): Ідентифікатор завдання (todo).
-        db (AsyncSession): Об'єкт сесії бази даних.
-        user (User): Об'єкт користувача, якому належить завдання.
-
-    Returns:
-        Todo | None: Об'єкт завдання (todo) або None, якщо не знайдено.
-
-    Raises:
-        NoResultFound: Якщо не знайдено жодного результату.
-        SQLAlchemyError: Помилка бази даних.
+    The get_todo function retrieves a single todo from the database.
+    
+    :param todo_id: int: Pass the id of the todo we want to get from the database
+    :param db: AsyncSession: Pass the database session to the function
+    :param user: User: Ensure that the user is only able to access their own data
+    :return: A todo object or none, if the todo is not found
+    :doc-author: Trelent
     """
     try:
         stmt = select(Todo).filter_by(id=todo_id, user=user)
@@ -87,18 +69,13 @@ async def get_todo(todo_id: int, db: AsyncSession, user: User):
 
 async def create_todo(body: TodoSchema, db: AsyncSession, user: User):
     """
-    Створити нове завдання (todo) в базі даних.
-
-    Args:
-        body (TodoSchema): Дані для створення нового завдання.
-        db (AsyncSession): Об'єкт сесії бази даних.
-        user (User): Об'єкт користувача, для якого створюється завдання.
-
-    Returns:
-        Todo: Нове створене завдання.
-
-    Raises:
-        SQLAlchemyError: Помилка бази даних при створенні завдання.
+    The create_todo function creates a new todo in the database.
+    
+    :param body: TodoSchema: Get the data from the request body
+    :param db: AsyncSession: Pass the database session object to the function
+    :param user: User: Pass the user object to the function
+    :return: A todo object
+    :doc-author: Trelent
     """
     try:
         todo_data = body.model_dump(exclude_unset=True)
@@ -113,19 +90,14 @@ async def create_todo(body: TodoSchema, db: AsyncSession, user: User):
 
 async def update_todo(todo_id: int, body: TodoUpdateSchema, db: AsyncSession, user: User):
     """
-    Оновити існуюче завдання (todo) в базі даних.
-
-    Args:
-        todo_id (int): Ідентифікатор завдання (todo) для оновлення.
-        body (TodoUpdateSchema): Дані для оновлення завдання.
-        db (AsyncSession): Об'єкт сесії бази даних.
-        user (User): Об'єкт користувача, якому належить завдання.
-
-    Returns:
-        Todo | None: Оновлене завдання або None, якщо не знайдено.
-
-    Raises:
-        SQLAlchemyError: Помилка бази даних при оновленні завдання.
+    The update_todo function updates an existing todo in the database.
+    
+    :param todo_id: int: Identify the todo that needs to be updated
+    :param body: TodoUpdateSchema: Pass the data for updating a todo
+    :param db: AsyncSession: Pass a database session to the function
+    :param user: User: Check if the user is authorized to update a particular todo
+    :return: A todo object
+    :doc-author: Trelent
     """
     try:
         stmt = select(Todo).filter_by(id=todo_id, user=user)
@@ -144,18 +116,13 @@ async def update_todo(todo_id: int, body: TodoUpdateSchema, db: AsyncSession, us
 
 async def delete_todo(todo_id: int, db: AsyncSession, user: User):
     """
-    Видалити завдання (todo) з бази даних за його ідентифікатором.
-
-    Args:
-        todo_id (int): Ідентифікатор завдання (todo) для видалення.
-        db (AsyncSession): Об'єкт сесії бази даних.
-        user (User): Об'єкт користувача, якому належить завдання.
-
-    Returns:
-        Todo | None: Видалене завдання або None, якщо не знайдено.
-
-    Raises:
-        SQLAlchemyError: Помилка бази даних при видаленні завдання.
+    The delete_todo function deletes a todo from the database by its id.
+    
+    :param todo_id: int: Specify the id of the todo that is going to be deleted
+    :param db: AsyncSession: Pass the database session object to the function
+    :param user: User: Ensure that the user is deleting their own todo
+    :return: The deleted todo or none if it is not found
+    :doc-author: Trelent
     """
     try:
         stmt = select(Todo).filter_by(id=todo_id, user=user)
@@ -167,4 +134,3 @@ async def delete_todo(todo_id: int, db: AsyncSession, user: User):
         return todo
     except SQLAlchemyError as e:
         raise e
-

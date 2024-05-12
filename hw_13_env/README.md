@@ -7,3 +7,7 @@
 -`alembic upgrade head`
 
 -`python main.py`
+
+-`poetry run python -m unittest discover -s tests`
+
+-`pytest -v -q`
